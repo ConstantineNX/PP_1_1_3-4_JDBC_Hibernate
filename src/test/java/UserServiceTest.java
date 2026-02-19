@@ -1,13 +1,29 @@
+import jm.task.core.jdbc.dao.UserDao;
+import jm.task.core.jdbc.dao.UserDaoJDBCImpl;
 import jm.task.core.jdbc.model.User;
 import jm.task.core.jdbc.service.UserService;
 import jm.task.core.jdbc.service.UserServiceImpl;
+import jm.task.core.jdbc.util.Util;
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Test;
-
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.List;
 
 public class UserServiceTest {
-    private final UserService userService = new UserServiceImpl();
+    private static Connection connection;
+    private final UserService userService = createUserService();
+
+    private static UserService createUserService() {
+        try {
+            connection = Util.getConnection();
+            UserDao userDao = new UserDaoJDBCImpl(connection);
+            return new UserServiceImpl(userDao);
+        } catch (SQLException e){
+            throw new RuntimeException(e);
+        }
+    }
 
     private final String testName = "Ivan";
     private final String testLastName = "Ivanov";
@@ -91,12 +107,17 @@ public class UserServiceTest {
             userService.saveUser(testName, testLastName, testAge);
             userService.cleanUsersTable();
 
-            if (userService.getAllUsers().size() != 0) {
+            if (!userService.getAllUsers().isEmpty()) {
                 Assert.fail("Метод очищения таблицы пользователей реализован не корректно");
             }
         } catch (Exception e) {
             Assert.fail("При тестировании очистки таблицы пользователей произошло исключение\n" + e);
         }
+    }
+
+    @AfterClass
+    public static void tearDown() throws SQLException {
+        connection.close();
     }
 
 }
