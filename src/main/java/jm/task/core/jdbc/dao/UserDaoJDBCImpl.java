@@ -76,7 +76,7 @@ public class UserDaoJDBCImpl implements UserDao {
                 preparedStatement.setString(2, lastName);
                 preparedStatement.setInt(3, age);
                 preparedStatement.executeUpdate();
-                System.out.println("User добавлен");
+                System.out.println("User: " + name + " " + lastName + " добавлен");
             } catch (SQLException e) {
                 System.out.println("Ошибка при добавлении User: " + e.getMessage());
             }
@@ -91,7 +91,7 @@ public class UserDaoJDBCImpl implements UserDao {
             try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
                 preparedStatement.setLong(1, id);
                 preparedStatement.executeUpdate();
-                System.out.println("User удален");
+                System.out.println("User c id " + id + " удален");
             } catch (SQLException e) {
                 System.out.println("Ошибка при удалении User: " + e.getMessage());
             }
